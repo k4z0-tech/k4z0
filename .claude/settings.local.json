@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -v \"^.venv$\")",
+      "Bash(grep -v \"^.idea$\")",
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(chmod +x *)"
+    ]
+  }
+}
