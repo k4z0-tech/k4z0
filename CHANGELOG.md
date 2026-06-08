@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated README.md with agent documentation (2026-06-08 19:25:00)
 - Added pandas and openpyxl to requirements.txt (2026-06-08 19:15:00)
+- Fixed order ID to use 'Source Document Number' column (2026-06-08 20:00:00)
+  - Previously used generic 'Order ID' or 'order_id'
+  - Now correctly uses actual document numbers from Excel file
 
 ## [0.1.0] - 2026-06-08
 
