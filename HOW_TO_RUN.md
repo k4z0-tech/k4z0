@@ -1,46 +1,96 @@
 # How to Run the Order Analysis Agent
 
-## Important: This is an INTERACTIVE Agent
+## Three Ways to Run the Agent
 
-The Order Analysis Agent is **fully interactive** and requires **human input** at every step. It will:
+### Option 1: Excel-based Feedback (Recommended)
 
-- **Wait for your answers** to each question
-- **Not proceed** until you provide input
-- **Learn from your feedback** to help with future orders
-
-## Running the Agent
-
-### Option 1: Use the Interactive Batch Script (Recommended for Windows)
+**Best for:** Large numbers of delayed orders, offline feedback collection
 
 ```bash
+# Windows
+run_agent_excel.bat
+
+# Or manually
+python src/order_agent_excel.py
+```
+
+**How it works:**
+1. Agent creates Excel file on your desktop with delayed orders
+2. You fill in feedback in the Excel file (offline, at your own pace)
+3. You run the agent again to process the filled Excel file
+4. Agent learns from your feedback
+
+**Benefits:**
+- Handle 503 orders without time pressure
+- Fill in feedback offline
+- Review and edit answers before processing
+- Share Excel file with team members
+
+---
+
+### Option 2: Interactive Batch Processing
+
+**Best for:** Real-time feedback, immediate processing
+
+```bash
+# Windows
 run_agent_interactive.bat
+
+# Or manually
+python src/order_agent_interactive.py
 ```
 
-This version handles large numbers of delayed orders by processing them in batches.
+**How it works:**
+1. Agent shows summary of delayed orders
+2. You choose how many orders to process (batch size: 10)
+3. Agent asks questions for each order
+4. You provide feedback in real-time
+5. Agent processes feedback immediately
 
-### Option 2: Use the Standard Batch Script (Windows)
+**Benefits:**
+- Immediate feedback processing
+- Batch processing for manageable chunks
+- Real-time learning
+
+---
+
+### Option 3: Standard Interactive Agent
+
+**Best for:** Small number of orders, quick feedback
 
 ```bash
+# Windows
 run_agent.bat
-```
 
-### Option 3: Use the Shell Script (Unix/Mac)
-
-```bash
+# Unix/Mac
 ./run_agent.sh
+
+# Or manually
+python src/order_agent_simple.py
 ```
 
-### Option 4: Run Manually
+**How it works:**
+1. Agent shows all delayed orders
+2. Agent asks questions for each order
+3. You provide feedback in real-time
+4. Agent processes feedback immediately
+
+---
+
+## Running Manually
 
 **Windows:**
 ```bash
 # Activate virtual environment
 .venv\Scripts\activate
 
-# Run the interactive agent (recommended)
+# Run Excel-based agent (recommended)
+python src/order_agent_excel.py
+
+# Or run interactive agent
 python src/order_agent_interactive.py
 
-# Or run the standard agent
+# Or run standard agent
 python src/order_agent_simple.py
 ```
 
@@ -49,10 +99,13 @@ python src/order_agent_simple.py
 # Activate virtual environment
 source .venv/bin/activate
 
-# Run the interactive agent (recommended)
+# Run Excel-based agent (recommended)
+python src/order_agent_excel.py
+
+# Or run interactive agent
 python src/order_agent_interactive.py
 
-# Or run the standard agent
+# Or run standard agent
 python src/order_agent_simple.py
 ```
 
