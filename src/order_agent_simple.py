@@ -111,8 +111,10 @@ class OrderAgent:
         # Convert to list of dictionaries
         self.delayed_orders = []
         for idx, row in delayed_df.iterrows():
+            # Use Source Document Number as order ID
+            order_id = row.get('Source Document Number', row.get('Order ID', row.get('order_id', f'Order_{idx}')))
             order = {
-                'order_id': row.get('Order ID', row.get('order_id', f'Order_{idx}')),
+                'order_id': order_id,
                 'delivery_tat': row['TAT_numeric'],
                 'tat_column': tat_column,
                 'original_data': row.to_dict()
