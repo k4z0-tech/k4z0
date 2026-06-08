@@ -138,9 +138,21 @@ class OrderAgentExcel:
             print("[ERROR] Could not find desktop path")
             return None
 
-        # Create filename with timestamp
+        # Check for existing feedback files
+        existing_files = []
+        for file in os.listdir(desktop_path):
+            if file.startswith('order_feedback_') and file.endswith('.xlsx'):
+                existing_files.append(file)
+
+        # Create filename with timestamp and version
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"order_feedback_{timestamp}.xlsx"
+        if existing_files:
+            # Add version number to avoid confusion
+            version = len(existing_files) + 1
+            filename = f"order_feedback_{timestamp}_v{version}.xlsx"
+        else:
+            filename = f"order_feedback_{timestamp}.xlsx"
+
         filepath = os.path.join(desktop_path, filename)
 
         # Prepare data for Excel
@@ -248,7 +260,7 @@ class OrderAgentExcel:
     def read_feedback_excel(self, filepath: str = None) -> List[Dict[str, Any]]:
         """Read feedback from filled Excel file."""
         if filepath is None:
-            # Find the most recent feedback file on desktop
+            # Find feedback files on desktop
             desktop_path = self.get_desktop_path()
             if not desktop_path:
                 print("[ERROR] Could not find desktop path")
@@ -258,17 +270,67 @@ class OrderAgentExcel:
             feedback_files = []
             for file in os.listdir(desktop_path):
                 if file.startswith('order_feedback_') and file.endswith('.xlsx'):
-                    feedback_files.append(file)
+                    # Get file modification time
+                    file_path = os.path.join(desktop_path, file)
+                    mod_time = os.path.getmtime(file_path)
+                    feedback_files.append((file, mod_time))
 
             if not feedback_files:
                 print("[ERROR] No feedback Excel files found on desktop")
                 print("[INFO] Please run the agent first to create the feedback file")
                 return []
 
-            # Get the most recent file
-            feedback_files.sort(reverse=True)
-            filepath = os.path.join(desktop_path, feedback_files[0])
-            print(f"[INFO] Found feedback file: {filepath}")
+            # Sort by modification time (most recent first)
+            feedback_files.sort(key=lambda x: x[1], reverse=True)
+
+            # Show available files
+            print(f"\n[INFO] Found {len(feedback_files)} feedback file(s) on desktop:")
+            print("-" * 70)
+            for i, (file, mod_time) in enumerate(feedback_files, 1):
+                # Convert timestamp to readable format
+                from datetime import datetime
+                mod_datetime = datetime.fromtimestamp(mod_time)
+                print(f"  {i}. {file}")
+                print(f"     Last modified: {mod_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
+
+            # Ask user which file to use
+            if len(feedback_files) > 1:
+                print("\n" + "="*70)
+                print("MULTIPLE FEEDBACK FILES FOUND")
+                print("="*70)
+                print("Options:")
+                print("  1. Use most recent file (recommended)")
+                print("  2. Choose specific file")
+                print("  3. Cancel")
+
+                choice = input("\nYour choice (1-3): ").strip()
+
+                if choice == '3':
+                    print("\n[INFO] Operation cancelled")
+                    return []
+
+                if choice == '2':
+                    # Let user choose specific file
+                    print(f"\nEnter file number (1-{len(feedback_files)}): ")
+                    try:
+                        file_num = int(input().strip())
+                        if 1 <= file_num <= len(feedback_files):
+                            selected_file = feedback_files[file_num - 1][0]
+                        else:
+                            print("[ERROR] Invalid file number, using most recent")
+                            selected_file = feedback_files[0][0]
+                    except ValueError:
+                        print("[ERROR] Invalid input, using most recent")
+                        selected_file = feedback_files[0][0]
+                else:
+                    # Use most recent
+                    selected_file = feedback_files[0][0]
+            else:
+                # Only one file, use it
+                selected_file = feedback_files[0][0]
+
+            filepath = os.path.join(desktop_path, selected_file)
+            print(f"\n[INFO] Using feedback file: {filepath}")
 
         try:
             # Read the Excel file
