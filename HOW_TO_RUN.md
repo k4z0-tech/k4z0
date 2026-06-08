@@ -10,26 +10,37 @@ The Order Analysis Agent is **fully interactive** and requires **human input** a
 
 ## Running the Agent
 
-### Option 1: Use the Batch Script (Windows)
+### Option 1: Use the Interactive Batch Script (Recommended for Windows)
+
+```bash
+run_agent_interactive.bat
+```
+
+This version handles large numbers of delayed orders by processing them in batches.
+
+### Option 2: Use the Standard Batch Script (Windows)
 
 ```bash
 run_agent.bat
 ```
 
-### Option 2: Use the Shell Script (Unix/Mac)
+### Option 3: Use the Shell Script (Unix/Mac)
 
 ```bash
 ./run_agent.sh
 ```
 
-### Option 3: Run Manually
+### Option 4: Run Manually
 
 **Windows:**
 ```bash
 # Activate virtual environment
 .venv\Scripts\activate
 
-# Run the agent
+# Run the interactive agent (recommended)
+python src/order_agent_interactive.py
+
+# Or run the standard agent
 python src/order_agent_simple.py
 ```
 
@@ -38,7 +49,10 @@ python src/order_agent_simple.py
 # Activate virtual environment
 source .venv/bin/activate
 
-# Run the agent
+# Run the interactive agent (recommended)
+python src/order_agent_interactive.py
+
+# Or run the standard agent
 python src/order_agent_simple.py
 ```
 
