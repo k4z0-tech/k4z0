@@ -158,9 +158,11 @@ class OrderAgentExcel:
         # Prepare data for Excel
         excel_data = []
         for i, order in enumerate(self.delayed_orders, 1):
+            # Convert order_id to string to prevent Excel from converting to integer
+            order_id = str(order['order_id'])
             row = {
                 'Row Number': i,
-                'Source Document Number': order['order_id'],
+                'Source Document Number': order_id,
                 'Delivery TAT (days)': order['delivery_tat'],
                 'Delay Reason': '',  # User fills this
                 'Actions Taken': '',  # User fills this
@@ -171,6 +173,9 @@ class OrderAgentExcel:
 
         # Create DataFrame
         df = pd.DataFrame(excel_data)
+
+        # Convert Source Document Number column to string type to preserve leading zeros and prevent integer conversion
+        df['Source Document Number'] = df['Source Document Number'].astype(str)
 
         # Add instructions sheet
         instructions_data = {
@@ -219,6 +224,25 @@ class OrderAgentExcel:
         # Write to Excel with multiple sheets
         with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
             df.to_excel(writer, sheet_name='Orders to Review', index=False)
+
+            # Format Source Document Number column as text to prevent integer conversion
+            workbook = writer.book
+            worksheet = writer.sheets['Orders to Review']
+
+            # Find the column index for Source Document Number
+            col_idx = None
+            for col_num, value in enumerate(df.columns, 1):
+                if value == 'Source Document Number':
+                    col_idx = col_num
+                    break
+
+            if col_idx:
+                # Apply text format to the entire column
+                from openpyxl.styles import numbers
+                for row in range(2, len(df) + 2):  # Skip header row
+                    cell = worksheet.cell(row=row, column=col_idx)
+                    cell.number_format = '@'  # '@' format means text
+
             instructions_df.to_excel(writer, sheet_name='Instructions', index=False)
             actions_df.to_excel(writer, sheet_name='Learned Actions', index=False)
 
@@ -334,7 +358,7 @@ class OrderAgentExcel:
 
         try:
             # Read the Excel file
-            df = pd.read_excel(filepath, sheet_name='Orders to Review')
+            df = pd.read_excel(filepath, sheet_name='Orders to Review', dtype={'Source Document Number': str})
             print(f"[OK] Read {len(df)} rows from feedback file")
 
             # Process each row
@@ -345,8 +369,14 @@ class OrderAgentExcel:
                 if not delay_reason or delay_reason == 'nan':
                     continue  # Skip rows without feedback
 
+                # Get order_id and ensure it's a string
+                order_id = str(row.get('Source Document Number', f'Order_{idx}'))
+                # Remove any decimal point that might have been added by Excel
+                if '.' in order_id:
+                    order_id = order_id.split('.')[0]
+
                 feedback = {
-                    'order_id': row.get('Source Document Number', f'Order_{idx}'),
+                    'order_id': order_id,
                     'timestamp': datetime.now().isoformat(),
                     'delay_reason': delay_reason,
                     'actions_taken': [a.strip() for a in str(row.get('Actions Taken', '')).split(',')],
