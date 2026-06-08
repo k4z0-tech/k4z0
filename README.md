@@ -13,8 +13,8 @@ A Python project for learning and experimenting with Claude AI.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/code_with_claude.git
-   cd code_with_claude
+   git clone https://github.com/k4z0-tech/k4z0.git
+   cd k4z0
    ```
 
 2. Create and activate a virtual environment:
@@ -34,12 +34,19 @@ A Python project for learning and experimenting with Claude AI.
 ## Project Structure
 
 ```
-code_with_claude/
+k4z0/
 ├── .venv/              # Virtual environment
 ├── .gitignore          # Git ignore rules
-├── CHANGELOG.md        # Version history
+├── CHANGELOG.md        # Version history with timestamps
 ├── CLAUDE.md           # Claude Code guidance
-└── README.md           # This file
+├── CONTRIBUTING.md     # Contributing guidelines
+├── LICENSE             # MIT License
+├── README.md           # This file
+├── VERSION             # Current version
+├── requirements.txt    # Dependencies
+├── scripts/            # Version management scripts
+├── src/                # Source code
+└── tests/              # Tests
 ```
 
 ## Versioning
